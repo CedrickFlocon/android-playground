@@ -4,7 +4,7 @@ android-compile-sdk = "36"
 android-target-sdk = "36"
 android-gradle-plugin = "8.13.0"
 androidx-activity = "1.11.0"
-androidx-compose-bom = "2025.09.00"
+androidx-compose-bom = "2025.10.01"
 androidx-tv = "1.0.0-alpha12"
 kotlin = "2.2.20"
 
