@@ -2,7 +2,7 @@
 android-min-sdk = "25"
 android-compile-sdk = "36"
 android-target-sdk = "36"
-android-gradle-plugin = "8.13.2"
+android-gradle-plugin = "9.0.0"
 androidx-activity = "1.12.3"
 androidx-compose-bom = "2026.01.00"
 androidx-tv = "1.0.0-alpha12"
@@ -25,6 +25,5 @@ compose-tv = ["androidx-tv-foundation"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
