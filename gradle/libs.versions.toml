@@ -6,7 +6,7 @@ android-gradle-plugin = "9.0.0"
 androidx-activity = "1.12.3"
 androidx-compose-bom = "2026.01.01"
 androidx-tv = "1.0.0-alpha12"
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 
 [libraries]
 kotlin-bom = { group = "org.jetbrains.kotlin", name = "kotlin-bom", version.ref = "kotlin" }
