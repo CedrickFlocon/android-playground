@@ -32,4 +32,5 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
     implementation(libs.bundles.compose.tv)
+    implementation(libs.okhttp)
 }
