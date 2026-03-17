@@ -5,7 +5,7 @@ android-target-sdk = "36"
 android-gradle-plugin = "9.1.0"
 androidx-activity = "1.12.4"
 androidx-compose-bom = "2026.02.01"
-androidx-tv = "1.0.0-alpha12"
+androidx-tv = "1.0.0-beta01"
 kotlin = "2.3.20"
 okhttp = "5.3.2"
 
