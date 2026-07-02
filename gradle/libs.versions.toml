@@ -7,7 +7,7 @@ androidx-activity = "1.13.0"
 androidx-compose-bom = "2026.06.00"
 androidx-tv = "1.0.0"
 kotlin = "2.3.21"
-okhttp = "5.3.2"
+okhttp = "5.4.0"
 
 [libraries]
 kotlin-bom = { group = "org.jetbrains.kotlin", name = "kotlin-bom", version.ref = "kotlin" }
