@@ -8,7 +8,7 @@ androidx-compose-bom = "2026.08.00"
 androidx-tv = "1.0.0"
 kotlin = "2.4.10"
 okhttp = "5.5.0"
-kotlinx-collections-immutable = "0.5.1"
+kotlinx-collections-immutable = "0.5.2"
 
 [libraries]
 kotlin-bom = { group = "org.jetbrains.kotlin", name = "kotlin-bom", version.ref = "kotlin" }
