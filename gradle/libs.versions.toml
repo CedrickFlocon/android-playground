@@ -12,6 +12,12 @@ kotlin = "2.4.20"
 ksp = "2.3.12"
 okhttp = "5.5.0"
 kotlinx-collections-immutable = "0.5.2"
+kotlinx-coroutines = "1.11.0"
+kotest = "6.2.5"
+truth = "1.4.5"
+turbine = "1.2.1"
+robolectric = "4.17"
+junit = "6.1.3"
 
 [libraries]
 kotlin-bom = { group = "org.jetbrains.kotlin", name = "kotlin-bom", version.ref = "kotlin" }
@@ -24,16 +30,27 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 androidx-tv-foundation = { group = "androidx.tv", name = "tv-foundation", version.ref = "androidx-tv" }
 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-compose" }
 
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+
+kotest-runner-junit5 = { group = "io.kotest", name = "kotest-runner-junit5", version.ref = "kotest" }
+truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+junit-vintage-engine = { group = "org.junit.vintage", name = "junit-vintage-engine", version.ref = "junit" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 
 [bundles]
 compose = ["androidx-activity-compose", "androidx-compose-foundation"]
 compose-tv = ["androidx-tv-foundation"]
 hilt = ["hilt-android", "hilt-navigation-compose"]
+test = ["androidx-compose-ui-test-junit4", "hilt-android-testing", "junit-vintage-engine", "kotest-runner-junit5", "kotlinx-coroutines-test", "robolectric", "truth", "turbine"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }

@@ -22,6 +22,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+        unitTests.all { it.useJUnitPlatform() }
+    }
 }
 
 kotlin {
@@ -40,4 +45,9 @@ dependencies {
 
     implementation(libs.kotlinx.collections.immutable)
     implementation(libs.okhttp)
+
+    kspTest(libs.hilt.compiler)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.bundles.test)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
