@@ -1,5 +1,6 @@
 package com.cedrickflocon.android.playground.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cedrickflocon.android.playground.data.ListRepository
@@ -48,7 +49,16 @@ class MainViewModel @Inject constructor(
             .distinctUntilChangedBy { it.currentPage }
             .filter { it.canFetchVideo(it.currentPage) }
             .flatMapMerge { state ->
-                val video = videoRepository.fetchVideo(state.videoPage!!.list[state.currentPage].id)
+                val video = try {
+                    videoRepository.fetchVideo(state.videoPage!!.list[state.currentPage].id)
+                } catch (e: Exception) {
+                    Log.e(
+                        TAG,
+                        "Error fetch video info, should update internal state to allow the ui display an error on the current page",
+                        e
+                    )
+                    return@flatMapMerge emptyFlow()
+                }
                 internalState.update { it.onRetreiveVideo(video) }
                 emptyFlow()
             },
@@ -59,7 +69,16 @@ class MainViewModel @Inject constructor(
             .flatMapConcat {
                 if (!it.canFetchNextPage()) return@flatMapConcat emptyFlow()
 
-                val nextPage = listRepository.fetchPage(it.videoPage!!.page + 1)
+                val nextPage = try {
+                    listRepository.fetchPage(it.videoPage!!.page + 1)
+                } catch (e: Exception) {
+                    Log.e(
+                        TAG,
+                        "Error fetch next page, should update internal state to allow the ui display the last page + 1 with a retry button",
+                        e
+                    )
+                    return@flatMapConcat emptyFlow()
+                }
                 internalState.update { it.onNextPageReceive(nextPage) }
                 emptyFlow()
             }
@@ -106,5 +125,9 @@ class MainViewModel @Inject constructor(
 
     private fun InternalState.onRetreiveVideo(video: Video): InternalState {
         return this.copy(videos = videos + (video.id to video))
+    }
+
+    companion object {
+        private val TAG = "MainViewModel"
     }
 }
