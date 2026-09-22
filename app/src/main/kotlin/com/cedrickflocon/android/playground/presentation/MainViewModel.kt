@@ -3,6 +3,8 @@ package com.cedrickflocon.android.playground.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cedrickflocon.android.playground.data.ListRepository
+import com.cedrickflocon.android.playground.data.VideoRepository
+import com.cedrickflocon.android.playground.domain.Video
 import com.cedrickflocon.android.playground.domain.VideoPage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
@@ -11,7 +13,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onSubscription
@@ -21,11 +25,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val listRepository: ListRepository
+    private val listRepository: ListRepository,
+    private val videoRepository: VideoRepository,
 ) : ViewModel() {
 
     private val internalState =
-        MutableStateFlow(InternalState(currentPage = 1, videoPage = null))
+        MutableStateFlow(InternalState(currentPage = 1, videoPage = null, emptyMap()))
 
     val onPageChange = { page: Int ->
         internalState.update { it.onCurrentPageChange(page) }
@@ -38,6 +43,17 @@ class MainViewModel @Inject constructor(
                 internalState.value = internalState.value.copy(videoPage = page)
             },
 
+        //Fetch Video detail
+        internalState
+            .distinctUntilChangedBy { it.currentPage }
+            .filter { it.canFetchVideo(it.currentPage) }
+            .flatMapMerge { state ->
+                val video = videoRepository.fetchVideo(state.videoPage!!.list[state.currentPage].id)
+                internalState.update { it.onRetreiveVideo(video) }
+                emptyFlow()
+            },
+
+        //Next Page
         internalState
             .distinctUntilChangedBy { it.currentPage }
             .flatMapConcat {
@@ -48,10 +64,9 @@ class MainViewModel @Inject constructor(
                 emptyFlow()
             }
     )
-        .map { it.videoPage }
         .distinctUntilChanged()
-        .map {
-            val videoPage = it ?: return@map ListUim.Loading
+        .map { internalState ->
+            val videoPage = internalState.videoPage ?: return@map ListUim.Loading
             ListUim.Success(
                 list = videoPage.list.map { video ->
                     VideoUim(
@@ -59,6 +74,7 @@ class MainViewModel @Inject constructor(
                         title = video.title,
                         channel = video.channel,
                         owner = video.owner,
+                        url = internalState.videos.get(video.id)?.streamUrl
                     )
                 }.toImmutableList(),
                 onChangePage = onPageChange,
@@ -69,9 +85,14 @@ class MainViewModel @Inject constructor(
     private data class InternalState(
         val currentPage: Int,
         val videoPage: VideoPage?,
+        val videos: Map<String, Video>
     ) {
         fun canFetchNextPage(): Boolean {
             return videoPage != null && videoPage.hasMore && currentPage >= videoPage.list.size - 3
+        }
+
+        fun canFetchVideo(page: Int): Boolean {
+            return videoPage?.list[page]?.id?.let { !videos.contains(it) } ?: false
         }
     }
 
@@ -81,5 +102,9 @@ class MainViewModel @Inject constructor(
 
     private fun InternalState.onNextPageReceive(nextPage: VideoPage): InternalState {
         return this.copy(videoPage = nextPage.copy(list = this.videoPage!!.list + nextPage.list))
+    }
+
+    private fun InternalState.onRetreiveVideo(video: Video): InternalState {
+        return this.copy(videos = videos + (video.id to video))
     }
 }

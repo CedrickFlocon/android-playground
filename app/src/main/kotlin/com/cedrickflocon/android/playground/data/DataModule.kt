@@ -17,14 +17,31 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideListService(): ListService {
-        val json = Json { ignoreUnknownKeys = true }
-        val client = OkHttpClient.Builder().build()
+    fun provideJson(): Json = Json { ignoreUnknownKeys = true }
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder().build()
+
+    @Provides
+    @Singleton
+    fun provideListService(json: Json, client: OkHttpClient): ListService {
         return Retrofit.Builder()
             .baseUrl("https://api.dailymotion.com/")
             .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
             .create(ListService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideVideoService(json: Json, client: OkHttpClient): VideoService {
+        return Retrofit.Builder()
+            .baseUrl("https://geo.dailymotion.com/")
+            .client(client)
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+            .create(VideoService::class.java)
     }
 }
