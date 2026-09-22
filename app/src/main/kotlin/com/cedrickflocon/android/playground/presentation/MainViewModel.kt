@@ -15,10 +15,12 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -49,25 +51,26 @@ class MainViewModel @Inject constructor(
             .distinctUntilChangedBy { it.currentPage }
             .filter { it.canFetchVideo(it.currentPage) }
             .flatMapMerge { state ->
-                val video = try {
-                    videoRepository.fetchVideo(state.videoPage!!.list[state.currentPage].id)
-                } catch (e: Exception) {
-                    Log.e(
-                        TAG,
-                        "Error fetch video info, should update internal state to allow the ui display an error on the current page",
-                        e
-                    )
-                    return@flatMapMerge emptyFlow()
+                flow {
+                    val video = try {
+                        videoRepository.fetchVideo(state.videoPage!!.list[state.currentPage].id)
+                    } catch (e: Exception) {
+                        Log.e(
+                            TAG,
+                            "Error fetch video info, should update internal state to allow the ui display an error on the current page",
+                            e
+                        )
+                        return@flow
+                    }
+                    internalState.update { it.onRetreiveVideo(video) }
                 }
-                internalState.update { it.onRetreiveVideo(video) }
-                emptyFlow()
             },
 
         //Next Page
         internalState
             .distinctUntilChangedBy { it.currentPage }
-            .flatMapConcat {
-                if (!it.canFetchNextPage()) return@flatMapConcat emptyFlow()
+            .onEach {
+                if (!it.canFetchNextPage()) return@onEach
 
                 val nextPage = try {
                     listRepository.fetchPage(it.videoPage!!.page + 1)
@@ -77,11 +80,11 @@ class MainViewModel @Inject constructor(
                         "Error fetch next page, should update internal state to allow the ui display the last page + 1 with a retry button",
                         e
                     )
-                    return@flatMapConcat emptyFlow()
+                    return@onEach
                 }
                 internalState.update { it.onNextPageReceive(nextPage) }
-                emptyFlow()
             }
+            .flatMapLatest { emptyFlow() }
     )
         .distinctUntilChanged()
         .map { internalState ->
