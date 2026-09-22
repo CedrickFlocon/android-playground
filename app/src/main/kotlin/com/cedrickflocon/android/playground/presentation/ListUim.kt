@@ -8,7 +8,7 @@ sealed interface ListUim {
 
     data class Success(
         val list: ImmutableList<VideoUim>,
-        val onChangePage: () -> Unit,
+        val onChangePage: (Int) -> Unit,
     ) : ListUim
 }
 
