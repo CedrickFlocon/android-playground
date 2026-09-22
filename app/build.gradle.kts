@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.bundles.compose)
     implementation(libs.bundles.compose.tv)
     implementation(libs.bundles.hilt)
+    implementation(libs.bundles.media3)
 
     ksp(libs.hilt.compiler)
 
