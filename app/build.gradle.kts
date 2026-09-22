@@ -4,6 +4,7 @@ plugins {
     id(libs.plugins.android.application.get().pluginId)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
 }
 
@@ -45,7 +46,7 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     implementation(libs.kotlinx.collections.immutable)
-    implementation(libs.okhttp)
+    implementation(libs.bundles.networking)
 
     kspTest(libs.hilt.compiler)
     testImplementation(platform(libs.androidx.compose.bom))
